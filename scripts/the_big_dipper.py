@@ -69,7 +69,27 @@ class initialize_dream:
         self.personality_types_context = __parse__(personality_types_results)
         print("done")
 
-
+def get_archetype(term):
+    archetypes = {
+        "ruler": ["boss", "leader", "aristocrat", "king", "queen", "politician", "role model", "manager", "administrator"],
+        "creator": ["artist", "inventor", "innovator", "musician", "writer", "dreamer", "creator"],
+        "sage": ["expert", "scholar", "detective", "advisor", "thinker", "philosopher", "academic", "researcher", "planner", "professional", "mentor", "teacher", "contemplative"],
+        "innocent": ["utopian", "traditionalist", "naive", "mystic", "saint", "romantic", "dreamer"],
+        "explorer": ["seeker", "iconoclast", "wanderer", "individualist", "pilgrim"],
+        "rebel": ["outlaw", "revolutionary", "wild man", "misfit", "iconoclast"],
+        "hero": ["warrior", "crusader", "rescuer", "superhero", "soldier", "dragon slayer", "winner", "team player"],
+        "wizard": ["magician", "visionary", "catalyst", "inventor", "charismatic leader", "shaman", "healer", "medicine man"],
+        "jester": ["fool", "trickster", "joker", "practical joker", "comedian"],
+        "everyman": ["good old boy", "regular guy", "regular girl", "person next door", "realist", "working stiff", "solid citizen", "good neighbor", "silent majority"],
+        "lover": ["partner", "friend", "intimate", "enthusiast", "sensualist", "spouse", "team-builder"],
+        "caregiver": ["saint", "altruist", "parent", "helper", "supporter"]
+    }
+    
+    for archetype, terms in archetypes.items():
+        if term in terms or term == archetype:
+            return archetype
+    
+    return "everyman"
 
 def main(dream_text: str) -> dict:
     dream = initialize_dream(dream_text=dream_text)
@@ -88,7 +108,9 @@ def main(dream_text: str) -> dict:
             f"Dream: {dream_text}\n\nJungian interpretation: {dream.personality_types_context}"
         )
         .model_dump_json()
-    )["archetype"]
+    )["archetype"].lower().strip().strip("the").strip()
+
+    archetype = get_archetype(archetype)
     data["archetype"] = archetype
 
     prompt = ChatPromptTemplate.from_template(
@@ -109,7 +131,7 @@ def main(dream_text: str) -> dict:
     descriptive_content = chain.invoke(
         {
             "dream_text": dream_text,
-            "archetype": archetype,
+            "archetype": "The " + archetype,
             "context": f"{dream.jung_interpretations_context}",
             # "freud_interpretations": dream.freud_interpretations_context,
         }
@@ -121,6 +143,8 @@ def main(dream_text: str) -> dict:
     
     data["descriptive_content"] = descriptive_content
     del dream
+
+    print("\n\n[TRANSACTION COMPLETE] sending over data, have fun :D\n\n")
     return data
 
 
@@ -128,5 +152,4 @@ if __name__ == "__main__":
     # with open("assets/input.txt") as f:
     #   dream_text = f.read()
 
-    # print(main(dream_text="I was in bed with my girlfriend"))
-    print(main(dream_text="I saved a dying nation"))
+    print(main(dream_text="had a dream where I was kissing my wife"))
