@@ -1,0 +1,58 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+    color: #cbcbcb;
+}
+
+body {
+    display: grid;
+    height: 100vh;
+    place-items: center;
+    background-color: #111111;
+}
+
+.main-title {
+    place-self: end;
+    justify-self: center;
+    padding-bottom: 2rem;
+}
+
+.dream-form {
+    place-self: start;
+    justify-self: center;
+    padding: 1rem;
+    border: 1px solid #636363;
+    border-radius: 0.7rem;
+}
+
+.dream-textarea {
+    border: none;
+    padding: 0.5rem;
+    resize: none;
+    outline: none;
+    background-color: #00000000;
+}
+
+.submit-button {
+    border: none;
+    text-decoration: none;
+    background: #4b4b4b;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: ease-in-out 0.2s;
+}
+
+.submit-button:hover {
+    background: #6e6e6e;
+}
+
+.footer {
+    place-self: end;
+    text-align: center;
+    padding: 1rem;
+    width: 100%;
+    background-color: black;
+}

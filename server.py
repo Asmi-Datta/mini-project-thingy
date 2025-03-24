@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, render_template, request
 from scripts import the_big_dipper
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route("/", methods=["GET"])
 def home():

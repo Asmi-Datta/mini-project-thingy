@@ -50,7 +50,7 @@ This should return `Python 3.11.11`, and `12.4` respectively.
 
 Finally, install the rest of the dependencies
 ```sh
-pip install accelerate beautifulsoup4 huggingface_hub langchain langchain-community langchain-huggingface langchain-ollama ollama python-dotenv requests sentence_transformers ipykernel iprogress flask pypdf
+pip install accelerate beautifulsoup4 huggingface_hub langchain langchain-community langchain-huggingface langchain-ollama ollama python-dotenv requests sentence_transformers ipykernel iprogress flask pypdf flask-cors
 ```
 <hr>
 
@@ -125,6 +125,22 @@ USE_CPU=1
 ```
 > This defaults to `1`, which means `True`
 
+
+## Insights on Jungian Archetypes
+
+There are 12:
+- Ruler, aka The boss, leader, aristocrat, king, queen, politician, role model, manager or administrator.
+- Creator/Artist, aka The artist, inventor, innovator, musician, writer or dreamer
+- Sage, aka The expert, scholar, detective, advisor, thinker, philosopher, academic, researcher, thinker, planner, professional, mentor, teacher, contemplative.
+- Innocent, aka Utopian, traditionalist, naive, mystic, saint, romantic,dreamer.
+- Explorer, aka The seeker, iconoclast, wanderer, individualist, pilgrim.
+- Rebel, aka the outlaw, revolutionary, wild man, the misfit, or iconoclast
+- Hero, aka The warrior, crusader, rescuer, superhero, the soldier, dragon slayer, the winner and the team player
+- Wizard, aka the magician, The visionary, catalyst, inventor, charismatic leader, shaman, healer, medicine man.
+- Jester, aka The fool, trickster, joker, practical joker or comedian
+- Everyman, aka The good old boy, regular guy/girl, the person next door, the realist, the working stiff, the solid citizen, the good neighbor, the silent majority.
+- Lover, aka The partner, friend, intimate, enthusiast, sensualist, spouse, team-builder.
+- Caregiver, aka The saint, altruist, parent, helper, supporter
 
 ## Data Sources
 
