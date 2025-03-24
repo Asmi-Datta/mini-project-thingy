@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: monospace;
+    font-family: "JetBrains Mono", monospace;
     color: #cbcbcb;
 }
 
@@ -21,6 +23,9 @@ body {
     place-self: end;
     justify-self: center;
     padding: 2rem;
+    font-weight: 800;
+    font-size: 50px;
+    text-transform: capitalize;
 }
 
 .dream-form {
@@ -29,6 +34,13 @@ body {
     padding: 1rem;
     border: 1px solid #636363;
     border-radius: 0.7rem;
+    width: 80%;
+    max-width: 560px;
+}
+
+.textarea-wrapper {
+    display: grid;
+    grid-template-columns: 10fr 1fr;
 }
 
 .dream-textarea {
@@ -40,6 +52,8 @@ body {
 }
 
 .submit-button {
+    place-self: end;
+    height: fit-content;
     border: none;
     text-decoration: none;
     background: #4b4b4b;
@@ -53,6 +67,20 @@ body {
     background: #6e6e6e;
 }
 
+.response-container {
+    display: grid;
+    place-items: center;
+}
+
+.response-image {
+    background-image: url("../assets/caregiver.webp");
+    background-size: cover;
+    width: 200px;
+    height: 200px;
+    padding-top: 2rem;
+    translate: 0 2rem;
+}
+
 .response {
     width: 80%;
     max-width: 560px;
@@ -60,11 +88,17 @@ body {
     padding-top: 2rem;
 }
 
+.archetype-heading,
 .response-heading {
     font-weight: bolder;
     font-size: 20px;
     text-transform: capitalize;
     padding-top: 1.5rem;
+}
+
+.archetype-heading {
+    font-size: 30px;
+    font-weight: 700;
 }
 
 .response-heading-sub {
@@ -159,9 +193,10 @@ body {
 .footer {
     place-self: end;
     text-align: center;
-    padding: 1rem;
+    padding: 0.5rem;
     width: 100%;
     background-color: black;
+    font-size: 12px;
 }
 
 @media screen and (max-height: 800px) {

@@ -1,10 +1,14 @@
 console.log("ready")
 const URI = "http://127.0.0.1:8000/llm"
+// const URI = "https://awaited-musical-jaguar.ngrok-free.app/llm"
 
 let dreamInput = document.querySelector(".dream-textarea");
 let responseDiv = document.querySelector(".response");
 let loadingArea = document.querySelector(".loader");
 let submitButton = document.querySelector(".submit-button")
+let responseImage = document.querySelector(".response-image")
+let archetypeHeading = document.querySelector(".archetype-heading")
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const textarea = document.querySelector(".dream-textarea");
@@ -23,9 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function toTitleCase(str) {
-    return str.replace(/_/g, ' ')                               // Convert snake_case to spaces
-              .replace(/([a-z])([A-Z])/g, '$1 $2')              // Convert camelCase to spaces
-              .replace(/\b\w/g, char => char.toUpperCase());    // Capitalize first letter of each word
+    return str.replace(/_/g, ' ')                         // Convert snake_case to spaces
+        .replace(/([a-z])([A-Z0-9])/g, '$1 $2')           // Convert camelCase to spaces
+        .replace(/\b\w/g, char => char.toUpperCase());    // Capitalize first letter of each word
 }
 
 function generateHTML(data, container) {
@@ -77,6 +81,8 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
     }
 
     responseDiv.innerHTML = "";
+    responseImage.classList.add("invisible")
+    archetypeHeading.classList.add("invisible")
     console.log("nuked");
     loadingArea.classList.remove("invisible");
 
@@ -98,6 +104,10 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
 
         generateHTML(descriptiveContent, responseDiv);
         loadingArea.classList.add("invisible")
+        responseImage.style.backgroundImage = `url("../static/assets/${archetype}.webp")`
+        responseImage.classList.remove("invisible")
+        archetypeHeading.textContent = `The ${archetype}`
+        archetypeHeading.classList.remove("invisible")
 
     } catch (e) {
         console.error(e);

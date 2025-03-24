@@ -20,10 +20,10 @@ def llm_():
 
     response = jsonify(the_big_dipper.main(dream_text=dream_text))
     
-    # time.sleep(5)
+    # time.sleep(2)
     # response = jsonify(
     #     {
-    #         "archetype": "everyman",
+    #         "archetype": "lover",
     #         "descriptive_content": {
     #             "archetype": {
     #                 "name": "The Everyman",
