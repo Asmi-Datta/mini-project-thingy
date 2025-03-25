@@ -1,10 +1,21 @@
-from flask import Flask, jsonify, render_template, request
-from scripts import the_big_dipper
-from flask_cors import CORS
+import json
 import time
+from flask import Flask, render_template, request, Response
+from flask_cors import CORS
+from scripts import the_big_dipper
 
 app = Flask(__name__)
 CORS(app)
+
+
+def json_listify(data: dict) -> dict:
+    spam = []
+    for key in data:
+        d = {}
+        d["_id_"] = key
+        d["_text_"] = data[key]
+        spam.append(d)
+    return json.dumps(spam)
 
 
 @app.route("/", methods=["GET"])
@@ -18,40 +29,37 @@ def llm_():
     if request.method == "POST":
         dream_text = request.form["dream"]
 
-    response = jsonify(the_big_dipper.main(dream_text=dream_text))
-    
+    data = the_big_dipper.main(dream_text=dream_text)
+
     # time.sleep(2)
-    # response = jsonify(
-    #     {
-    #         "archetype": "lover",
-    #         "descriptive_content": {
-    #             "archetype": {
-    #                 "name": "The Everyman",
-    #                 "description": "A symbol of ordinary, everyday life and experiences.",
-    #             },
-    #             "dream": {"description": "Fell off a bridge"},
-    #             "interpretation": {
-    #                 "lesson1": {
-    #                     "title": "Our Conscious Actions are Motivated by our Unconscious Ones",
-    #                     "text": "The dream may be highlighting unconscious motivations or desires that are driving your actions in waking life.",
-    #                 },
-    #                 "lesson2": {
-    #                     "title": "Talk A Lot And You Will Eventually Betray Yourself",
-    #                     "text": "The dream could be suggesting that you need to examine your own weaknesses and biases, rather than relying on surface-level knowledge or assumptions.",
-    #                 },
-    #                 "actionableNotes": [
-    #                     {
-    #                         "title": "What are you lacking?",
-    #                         "text": "Consider what areas of your life may be lacking or compensating for shortcomings. Look beyond the qualities you present to others and examine your real defects.",
-    #                     }
-    #                 ],
-    #             },
+    # data = {
+    #     "archetype": "caregiver",
+    #     "descriptive_content": {
+    #         "zzz": {"Content": "lmao what a jerk"},
+    #         "dream": {
+    #             "description": "I was my mother",
+    #             "archetype": "The Caregiver",
     #         },
-    #     }
-    # )
+    #         "interpretation": {
+    #             "context": "The assumption that what I think is also my partner's thought.",
+    #             "compensation": "Our dreams are about compensation, which means they explain what we lack in the real world. In this case, the dream may be compensating for feelings of inadequacy or a lack of nurturing in your relationship with your partner.",
+    #         },
+    #         "analysis": {
+    #             "insights": [
+    #                 "The dream may be revealing an unconscious desire to take on a more caregiving role in your relationship.",
+    #                 "It could also suggest that you're feeling overwhelmed or burdened by the responsibilities of being in a relationship, and your unconscious is trying to compensate by taking on a more nurturing role.",
+    #             ],
+    #             "questions": [
+    #                 "What are my feelings about being in a relationship? Am I feeling overwhelmed or unfulfilled?",
+    #                 "How do I feel about taking care of others? Is this something that comes naturally to me?",
+    #             ],
+    #         },
+    #     },
+    # }
+
+    response = Response(json_listify(data), mimetype="application/json")
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-    # return {"data": 1}
 
 
 if __name__ == "__main__":

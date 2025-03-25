@@ -8,6 +8,7 @@ let loadingArea = document.querySelector(".loader");
 let submitButton = document.querySelector(".submit-button")
 let responseImage = document.querySelector(".response-image")
 let archetypeHeading = document.querySelector(".archetype-heading")
+let serverMessage = document.querySelector(".server-message")
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -38,8 +39,7 @@ function generateHTML(data, container) {
         let heading = document.createElement("div");
 
         if (key.toLowerCase() == "text" || key.toLowerCase() == "title") {
-            let gap = document.createElement("div");
-            gap.classList.add("gap");
+
         } else {
             heading.textContent = toTitleCase(key);
         }
@@ -56,11 +56,13 @@ function generateHTML(data, container) {
             container.appendChild(subContainer);
 
         } else if (Array.isArray(value)) {
+            // chances are, when it is a list, we are only concerned about a single key
             let listContainer = document.createElement("div");
+
             value.forEach((item, index) => {
-                let listItem = document.createElement("div");
-                generateHTML(item, listItem);
-                listContainer.appendChild(listItem);
+                let paragraph = document.createElement("p");
+                paragraph.textContent = item;
+                listContainer.appendChild(paragraph);
             });
             container.appendChild(listContainer);
 
@@ -83,6 +85,7 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
     responseDiv.innerHTML = "";
     responseImage.classList.add("invisible")
     archetypeHeading.classList.add("invisible")
+    serverMessage.classList.add("invisible")
     console.log("nuked");
     loadingArea.classList.remove("invisible");
 
@@ -97,13 +100,24 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
 
         console.log("data exchanged")
         let jsonResponse = await response.json();
+        jsonResponse = Object.fromEntries(jsonResponse.map(item => [item._id_, item._text_]));
         console.log(jsonResponse);
 
         let archetype = jsonResponse.archetype;
+
+        if (archetype == "DECODE_ERROR") {
+            console.error("JSON DECODE ERROR FROM SERVER");
+            loadingArea.classList.add("invisible")
+            serverMessage.classList.remove("invisible")
+            serverMessage.textContent = "Server Error :/"
+            return;
+        }
+
         let descriptiveContent = jsonResponse.descriptive_content;
 
         generateHTML(descriptiveContent, responseDiv);
         loadingArea.classList.add("invisible")
+        serverMessage.classList.add("invisible")
         responseImage.style.backgroundImage = `url("../static/assets/${archetype}.webp")`
         responseImage.classList.remove("invisible")
         archetypeHeading.textContent = `The ${archetype}`
@@ -111,6 +125,10 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
 
     } catch (e) {
         console.error(e);
+        loadingArea.classList.add("invisible")
+        serverMessage.classList.remove("invisible")
+        serverMessage.textContent = "Server Error :/"
+        return;
     }
 })
 

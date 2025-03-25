@@ -91,6 +91,17 @@ def get_archetype(term):
     
     return "everyman"
 
+def clean_dict(d, min_length=5):
+    if isinstance(d, dict):
+        return {
+            k: clean_dict(v, min_length)
+            for k, v in d.items()
+            if isinstance(v, (dict, list)) or (isinstance(v, str) and len(v.strip()) >= min_length)
+        }
+    elif isinstance(d, list):
+        return [clean_dict(item, min_length) for item in d if isinstance(item, (dict, list)) or (isinstance(item, str) and len(item.strip()) >= min_length)]
+    return d
+
 def main(dream_text: str) -> dict:
     dream = initialize_dream(dream_text=dream_text)
     data = {}
@@ -110,7 +121,10 @@ def main(dream_text: str) -> dict:
         .model_dump_json()
     )["archetype"].lower().strip().strip("the").strip()
 
+    print(f"\n====== [ORIGINAL ARCHETYPE: {archetype}] ======")
     archetype = get_archetype(archetype)
+    print(f"====== [FINAL ARCHETYPE: {archetype}] ======\n")
+
     data["archetype"] = archetype
 
     prompt = ChatPromptTemplate.from_template(
@@ -137,14 +151,21 @@ def main(dream_text: str) -> dict:
         }
     ).content
 
-    _ = descriptive_content.split("```")[1]
-    __ = re.sub("\}\n\n\{", ",", _)
-    descriptive_content = json.loads(__)
+    try:
+        _ = descriptive_content.split("```")[1]
+        __ = re.sub("\}\n\n\{", ",", _)
+        descriptive_content = json.loads(__)
+        descriptive_content = clean_dict(descriptive_content)
+
+    except (json.decoder.JSONDecodeError, IndexError) as e:
+        print("[DECODE ERROR]", e)
+        del dream
+        return {"archetype": "DECODE_ERROR"}
     
     data["descriptive_content"] = descriptive_content
     del dream
 
-    print("\n\n[TRANSACTION COMPLETE] sending over data, have fun :D\n\n")
+    print("\nData Sent:\n", data, "\n\n[TRANSACTION COMPLETE] sending over data, have fun :D\n\n")
     return data
 
 
@@ -152,4 +173,4 @@ if __name__ == "__main__":
     # with open("assets/input.txt") as f:
     #   dream_text = f.read()
 
-    print(main(dream_text="had a dream where I was kissing my wife"))
+    print(main(dream_text="I was my mother"))
