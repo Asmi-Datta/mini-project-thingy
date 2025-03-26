@@ -160,7 +160,7 @@ def main(dream_text: str) -> dict:
     except (json.decoder.JSONDecodeError, IndexError) as e:
         print("[DECODE ERROR]", e)
         del dream
-        return {"archetype": "DECODE_ERROR"}
+        return
     
     data["descriptive_content"] = descriptive_content
     del dream

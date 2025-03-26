@@ -4,6 +4,7 @@ const URI = "http://127.0.0.1:8000/llm"
 
 let dreamInput = document.querySelector(".dream-textarea");
 let responseDiv = document.querySelector(".response");
+let responseContainer = document.querySelector(".response-container");
 let loadingArea = document.querySelector(".loader");
 let submitButton = document.querySelector(".submit-button")
 let responseImage = document.querySelector(".response-image")
@@ -97,6 +98,7 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
     serverMessage.classList.add("invisible")
     console.log("nuked");
     loadingArea.classList.remove("invisible");
+    responseContainer.classList.remove("fade-in")
 
     let formData = new FormData();
     formData.append("dream", dreamInput.value);
@@ -113,17 +115,10 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
         console.log(jsonResponse);
 
         let archetype = jsonResponse.archetype;
-
-        if (archetype == "DECODE_ERROR") {
-            console.error("JSON DECODE ERROR FROM SERVER");
-            loadingArea.classList.add("invisible")
-            serverMessage.classList.remove("invisible")
-            return;
-        }
-
         let descriptiveContent = jsonResponse.descriptive_content;
 
         generateHTML(descriptiveContent, responseDiv);
+        responseContainer.classList.add("fade-in")
 
         loadingArea.classList.add("invisible")
         serverMessage.classList.add("invisible")
