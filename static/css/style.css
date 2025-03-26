@@ -19,6 +19,7 @@ body {
     display: none;
 }
 
+.server-message,
 .main-title {
     place-self: end;
     justify-self: center;
@@ -26,6 +27,12 @@ body {
     font-weight: 800;
     font-size: 50px;
     text-transform: capitalize;
+    text-decoration: none;
+}
+
+.server-message {
+    font-size: 27px;
+    color: #cf6a6a;
 }
 
 .dream-form {
@@ -83,7 +90,7 @@ body {
 
 .response {
     width: 80%;
-    max-width: 560px;
+    max-width: 700px;
     padding-bottom: 2rem;
     padding-top: 2rem;
 }

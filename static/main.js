@@ -56,13 +56,22 @@ function generateHTML(data, container) {
             container.appendChild(subContainer);
 
         } else if (Array.isArray(value)) {
-            // chances are, when it is a list, we are only concerned about a single key
             let listContainer = document.createElement("div");
 
             value.forEach((item, index) => {
+
                 let paragraph = document.createElement("p");
-                paragraph.textContent = item;
+                let spam = "";
+                if (typeof item === "object") {
+                    Object.entries(item).forEach(([k, v]) => {
+                        spam += v + "."
+                    })
+                } else {
+                    spam = item;
+                }
+                paragraph.textContent = spam;
                 listContainer.appendChild(paragraph);
+
             });
             container.appendChild(listContainer);
 
@@ -109,13 +118,13 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
             console.error("JSON DECODE ERROR FROM SERVER");
             loadingArea.classList.add("invisible")
             serverMessage.classList.remove("invisible")
-            serverMessage.textContent = "Server Error :/"
             return;
         }
 
         let descriptiveContent = jsonResponse.descriptive_content;
 
         generateHTML(descriptiveContent, responseDiv);
+
         loadingArea.classList.add("invisible")
         serverMessage.classList.add("invisible")
         responseImage.style.backgroundImage = `url("../static/assets/${archetype}.webp")`
@@ -127,7 +136,6 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
         console.error(e);
         loadingArea.classList.add("invisible")
         serverMessage.classList.remove("invisible")
-        serverMessage.textContent = "Server Error :/"
         return;
     }
 })
