@@ -42,7 +42,7 @@ def json_listify(data: dict) -> str:
     return json.dumps(spam)
 
 # Keep track of submitted dreams and their archetypes
-dream_history = []
+# dream_history = []
 
 
 # Generate time series data for archetypes
@@ -130,12 +130,12 @@ def llm_():
     # }
     selected_archetype = data['archetype']
     # Store the dream and archetype for history
-    if "archetype" in data:
-        dream_history.append({
-            "dream": dream_text,
-            "archetype": data["archetype"],
-            "timestamp": datetime.now().isoformat()
-        })
+    # if "archetype" in data:
+    #     dream_history.append({
+    #         "dream": dream_text,
+    #         "archetype": data["archetype"],
+    #         "timestamp": datetime.now().isoformat()
+    #     })
     
     response = Response(json_listify(data), mimetype="application/json")
     response.headers.add("Access-Control-Allow-Origin", "*")
