@@ -10,13 +10,13 @@
 
 body {
     display: grid;
-    height: 100vh;
+    min-height: 100vh;
     place-items: center;
     background-color: #111111;
 }
 
 .invisible {
-    display: none;
+    display: none !important;
 }
 
 .server-message,
@@ -95,13 +95,62 @@ body {
     background: #6e6e6e;
 }
 
-.response-container {
+/* Tab Navigation */
+.tabs-container {
+    width: 80%;
+    max-width: 700px;
+    margin: 0 auto;
+    margin-top: 2rem;
+}
+
+.tabs {
     display: grid;
+    border-bottom: 1px solid #636363;
+    margin-bottom: 1rem;
+    place-items: center;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn:hover {
+    opacity: 1;
+}
+
+.tab-btn.active {
+    opacity: 1;
+    border-bottom: 2px solid #5964F3;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: grid;
+    animation: fade-in 0.5s ease;
     place-items: center;
 }
 
+.response-container {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .response-image {
-    background-image: url("../assets/caregiver.webp");
     background-size: cover;
     width: 200px;
     height: 200px;
@@ -139,6 +188,127 @@ body {
     font-size: 15px;
 }
 
+/* Chart Styling (from Dashboard) */
+.chart-container {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 1000px;
+}
+
+.chart-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.chart-card {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.chart-title {
+    text-align: center;
+    color: #eee;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.chart-subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.full-width {
+    width: 100%;
+    max-width: 100%;
+}
+
+.gauge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.rarity-description {
+    position: absolute;
+    top: 100%;
+    margin-top: -25px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #DCB7F4;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Resources Tab Styling */
+.resources-container {
+    width: 80%;
+    max-width: 700px;
+    padding: 1rem;
+}
+
+.resources-title {
+    font-size: 24px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.resource-card {
+    background: #1e1e2e;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+}
+
+.resource-title {
+    font-size: 18px;
+    margin-bottom: 0.75rem;
+    color: #DCB7F4;
+}
+
+.resource-description {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 1rem;
+}
+
+.resource-link {
+    display: inline-block;
+    font-size: 14px;
+    color: #5964F3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.resource-link:hover {
+    color: #F650A0;
+    text-decoration: underline;
+}
+
+/* Loading Animation */
 .loader {
     width: 9px;
     height: 9px;
@@ -172,13 +342,33 @@ body {
     }
 }
 
-@media (max-width: 430px) {
+@media (max-width: 768px) {
     .main-title {
         font-size: 40px;
     }
 
     .dream-svg {
         width: 40px;
+    }
+    
+    .chart-card {
+        min-width: 100%;
+    }
+    
+    .tabs {
+        /* flex-direction: column;
+        border-bottom: none; */
+        grid-template-columns: 1fr;
+    }
+    
+    .tab-btn {
+        text-align: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #636363;
+    }
+    
+    .tab-btn.active {
+        border-bottom: 1px solid #5964F3;
     }
 }
 

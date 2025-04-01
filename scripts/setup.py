@@ -64,7 +64,7 @@ freud_interpretations_store.add_documents(documents=freud_interpretations_splits
 print("DONE")
 
 
-dummp_dir = sys.argv[1]
+dump_dir = sys.argv[1]
 with open(
     path.join(dump_dir, "dream_dictionary_store.dat"), mode="wb"
 ) as f_dream_dictionary_store, open(
