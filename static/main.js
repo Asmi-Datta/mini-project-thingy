@@ -532,129 +532,64 @@ function populateResourcesTab(archetype) {
     const resourcesGrid = document.querySelector('.resources-grid');
     resourcesGrid.innerHTML = ''; // Clear existing content
     
-    // Resource data based on archetype
-    const resourceData = getResourcesForArchetype(archetype);
-    
-    // Generate resource cards
-    resourceData.forEach(resource => {
-        const card = document.createElement('div');
-        card.className = 'resource-card';
-        
-        card.innerHTML = `
-            <h3>${resource.title}</h3>
-            <p>${resource.description}</p>
-            <div class="resource-links">
-                ${resource.links.map(link => `
-                    <a href="#" class="resource-link" onclick="return false;">
-                        ${link.type} <span class="resource-arrow">→</span>
-                    </a>
-                `).join('')}
-            </div>
-        `;
-        
-        resourcesGrid.appendChild(card);
-    });
+    // Fetch resources from server based on archetype
+    fetchResourcesForArchetype(archetype)
+        .then(resources => {
+            // Generate resource cards
+            resources.forEach(resource => {
+                const card = document.createElement('div');
+                card.className = 'resource-card';
+                
+                card.innerHTML = `
+                    <h3>${resource.title}</h3>
+                    <p>${resource.description}</p>
+                    <div class="resource-links">
+                        ${resource.links.map(link => `
+                            <a href="${link.url}" class="resource-link" onclick="return false;">
+                                ${link.type} <span class="resource-arrow">→</span>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                
+                resourcesGrid.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching resources:", error);
+            resourcesGrid.innerHTML = '<p class="error-message">Failed to load resources. Please try again later.</p>';
+        });
 }
 
-// Get resources based on archetype
-function getResourcesForArchetype(archetype) {
-    // Default resources
-    const defaultResources = [
-        {
-            title: "Understanding Jungian Archetypes",
-            description: "An introduction to Carl Jung's theory of archetypes and their significance in dream interpretation.",
-            links: [
-                { type: "Article", url: "#" },
-                { type: "Video", url: "#" }
-            ]
-        },
-        {
-            title: "Dream Symbolism Dictionary",
-            description: "Comprehensive guide to common dream symbols and their potential meanings across cultures.",
-            links: [
-                { type: "Reference", url: "#" }
-            ]
+// Fetch resources from Flask server
+async function fetchResourcesForArchetype(archetype) {
+    try {
+        const response = await fetch(`/get_resources/${archetype}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    ];
-    
-    // Archetype-specific resources
-    const archetypeResources = {
-        "explorer": [
+        data = await response.json();
+        return data;
+
+    } catch (error) {
+        console.error("Error fetching resources:", error);
+        console.log("encountered an error")
+        // Return default resources as fallback
+        return [
             {
-                title: "The Explorer Archetype",
-                description: "Deep dive into the Explorer archetype and its manifestations in dreams, literature, and culture.",
+                title: "Understanding Jungian Archetypes",
+                description: "An introduction to Carl Jung's theory of archetypes and their significance in dream interpretation.",
                 links: [
-                    { type: "Study", url: "#" },
-                    { type: "Examples", url: "#" }
+                    { type: "Article", url: "https://conorneill.com/2018/04/21/understanding-personality-the-12-jungian-archetypes/" },
+                ]
+            },
+            {
+                title: "Dream Symbolism Dictionary",
+                description: "Comprehensive guide to common dream symbols and their potential meanings across cultures.",
+                links: [
+                    { type: "Reference", url: "https://www.dreamdictionary.org/" }
                 ]
             }
-        ],
-        "hero": [
-            {
-                title: "The Hero's Journey",
-                description: "Joseph Campbell's monomyth and its connection to the Hero archetype in dreams.",
-                links: [
-                    { type: "Analysis", url: "#" },
-                    { type: "Practice", url: "#" }
-                ]
-            }
-        ],
-        "caregiver": [
-            {
-                title: "The Nurturing Mind",
-                description: "Understanding the Caregiver archetype and its psychological significance.",
-                links: [
-                    { type: "Research", url: "#" },
-                    { type: "Applications", url: "#" }
-                ]
-            }
-        ],
-        "everyman": [
-            {
-                title: "The Everyman in Dreams",
-                description: "Exploring the commonality and significance of the Everyman archetype in dream analysis.",
-                links: [
-                    { type: "Guide", url: "#" }
-                ]
-            }
-        ],
-        "outlaw": [
-            {
-                title: "Rebellion in Dreams",
-                description: "The psychological significance of the Outlaw archetype in dream interpretation.",
-                links: [
-                    { type: "Case Studies", url: "#" }
-                ]
-            }
-        ],
-        "sage": [
-            {
-                title: "Wisdom and Knowledge",
-                description: "Exploring the Sage archetype's appearances in dreams and its connection to personal growth.",
-                links: [
-                    { type: "Analysis", url: "#" },
-                    { type: "Practices", url: "#" }
-                ]
-            }
-        ],
-        "creator": [
-            {
-                title: "Creative Expression in Dreams",
-                description: "Understanding how the Creator archetype manifests in dreams and waking life.",
-                links: [
-                    { type: "Workshop", url: "#" },
-                    { type: "Examples", url: "#" }
-                ]
-            }
-        ]
-    };
-    
-    // Combine default resources with archetype-specific ones
-    let resources = [...defaultResources];
-    
-    if (archetypeResources[archetype]) {
-        resources = [...archetypeResources[archetype], ...resources];
+        ];
     }
-    
-    return resources;
 }
