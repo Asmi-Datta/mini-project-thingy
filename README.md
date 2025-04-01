@@ -158,3 +158,7 @@ There are 12:
 <!-- - https://chatgpt.com/share/67d9a0d7-e2c4-8003-b12d-b9701cf702e6 -->
 
 > **TODO:** Add the rest
+
+## To Do
+
+- Update Docs: add the part for the newly added pickles.

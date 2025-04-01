@@ -122,6 +122,7 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
     console.log("nuked");
     loadingArea.classList.remove("invisible");
     responseContainer.classList.remove("fade-in")
+    responseContainer.classList.add("invisible")
 
     let formData = new FormData();
     formData.append("dream", dreamInput.value);
@@ -150,6 +151,7 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
         archetypeHeading.textContent = `The ${archetype}`
         archetypeHeading.classList.remove("invisible")
         tabsContainer.classList.remove("invisible")
+        responseContainer.classList.remove("invisible")
         
         // Initialize or update charts after getting response
         initializeCharts();
