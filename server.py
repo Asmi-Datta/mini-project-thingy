@@ -1,8 +1,7 @@
 import json
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, Response, jsonify, g
-import sqlite3
+from flask import Flask, render_template, request, Response, jsonify
 from flask_cors import CORS
 from scripts import the_big_dipper
 import pandas as pd
@@ -106,36 +105,6 @@ def calculate_rarity_score(archetype):
     
     return score
 
-
-# Database setup
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect('dreams.db')
-        db.row_factory = sqlite3.Row
-    return db
-
-def init_db():
-    with app.app_context():
-        db = get_db()
-        db.execute('''
-            CREATE TABLE IF NOT EXISTS dreams (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                dream_text TEXT NOT NULL,
-                archetype TEXT NOT NULL,
-                interpretation TEXT NOT NULL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        db.commit()
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html")
@@ -158,15 +127,6 @@ def llm_():
     #     }
     # }
     selected_archetype = data['archetype']
-
-    # Store in SQLite database
-    db = get_db()
-    db.execute(
-        'INSERT INTO dreams (dream_text, archetype, interpretation) VALUES (?, ?, ?)',
-        (dream_text, data['archetype'], json.dumps(data))
-    )
-    db.commit()
-
     # Store the dream and archetype for history
     if "archetype" in data:
         dream_history.append({
@@ -178,31 +138,6 @@ def llm_():
     response = Response(json_listify(data), mimetype="application/json")
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
-
-
-# Add new routes for chat history
-@app.route("/get_history")
-def get_history():
-    db = get_db()
-    dreams = db.execute('SELECT id, dream_text, archetype, timestamp FROM dreams ORDER BY timestamp DESC').fetchall()
-    history = [{'id': row['id'], 'dream': row['dream_text'], 'archetype': row['archetype'], 
-                'timestamp': row['timestamp']} for row in dreams]
-    return jsonify(history)
-
-@app.route("/get_dream/<int:dream_id>")
-def get_dream(dream_id):
-    db = get_db()
-    dream = db.execute('SELECT * FROM dreams WHERE id = ?', (dream_id,)).fetchone()
-    if dream:
-        return jsonify({
-            'id': dream['id'],
-            'dream_text': dream['dream_text'],
-            'archetype': dream['archetype'],
-            'interpretation': json.loads(dream['interpretation']),
-            'timestamp': dream['timestamp']
-        })
-    return jsonify({'error': 'Dream not found'}), 404
-
 
 # Visualization API endpoints
 @app.route('/get_bar_data')
@@ -254,5 +189,4 @@ def get_rarity_score():
     })
 
 if __name__ == "__main__":
-    init_db()
     app.run(port=8000, debug=True)
