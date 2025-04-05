@@ -1,5 +1,5 @@
 console.log("ready")
-const URI = "http://127.0.0.1:8000/llm"
+// const URI = "http://127.0.0.1:8000/llm"
 // const URI = "https://awaited-musical-jaguar.ngrok-free.app/llm"
 
 let dreamInput = document.querySelector(".dream-textarea");
@@ -122,12 +122,13 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
     console.log("nuked");
     loadingArea.classList.remove("invisible");
     responseContainer.classList.remove("fade-in")
+    responseContainer.classList.add("invisible")
 
     let formData = new FormData();
     formData.append("dream", dreamInput.value);
 
     try {
-        const response = await fetch(URI, {
+        const response = await fetch("/llm", {
             method: "POST",
             body: formData,
         });
@@ -150,6 +151,7 @@ document.querySelector(".dream-form").addEventListener("submit", async (event) =
         archetypeHeading.textContent = `The ${archetype}`
         archetypeHeading.classList.remove("invisible")
         tabsContainer.classList.remove("invisible")
+        responseContainer.classList.remove("invisible")
         
         // Initialize or update charts after getting response
         initializeCharts();
@@ -545,7 +547,7 @@ function populateResourcesTab(archetype) {
                     <p>${resource.description}</p>
                     <div class="resource-links">
                         ${resource.links.map(link => `
-                            <a href="${link.url}" class="resource-link" onclick="return false;">
+                            <a href="${link.url}" class="resource-link" target="_blank">
                                 ${link.type} <span class="resource-arrow">→</span>
                             </a>
                         `).join('')}

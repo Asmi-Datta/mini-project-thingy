@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, Response, jsonify
 from flask_cors import CORS
@@ -7,6 +8,7 @@ from scripts import the_big_dipper
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+from prometheus_client import Counter, Histogram, Summary, Gauge, Info, generate_latest, REGISTRY, CollectorRegistry
 
 load_dotenv()
 app = Flask(__name__)
@@ -17,6 +19,24 @@ RESOURCES_DIR = "static/resources"
 df = pd.read_csv("static/assets/facebook_dream_archetypes.csv")
 dream_text = ""
 selected_archetype = ""
+
+# Define Prometheus metrics
+DREAM_SUBMISSIONS = Counter('dream_submissions_total', 'Total number of dreams submitted', ['status'])
+ENDPOINT_REQUESTS = Counter('endpoint_requests_total', 'Total requests per endpoint', ['endpoint', 'method', 'status_code'])
+REQUEST_LATENCY = Histogram('request_latency_seconds', 'Request latency in seconds', ['endpoint'])
+DREAM_PROCESSING_TIME = Summary('dream_processing_seconds', 'Time spent processing dreams')
+ACTIVE_USERS = Gauge('active_users', 'Number of active users')
+APP_INFO = Info('dream_analyzer', 'Dream analyzer application information')
+
+# Set application info
+APP_INFO.info({'version': '1.0.0', 'maintainer': 'Dream Team'})
+
+# Archetype distribution gauge
+ARCHETYPE_DISTRIBUTION = Gauge('archetype_distribution', 'Distribution of dream archetypes', ['archetype'])
+
+# Initialize distribution based on data frame
+for archetype, count in df['archetype'].value_counts().items():
+    ARCHETYPE_DISTRIBUTION.labels(archetype).set(count)
 
 # Custom JSON encoder to handle NumPy types
 class NumpyEncoder(json.JSONEncoder):
@@ -40,10 +60,6 @@ def json_listify(data: dict) -> str:
         d["_text_"] = data[key]
         spam.append(d)
     return json.dumps(spam)
-
-# Keep track of submitted dreams and their archetypes
-# dream_history = []
-
 
 # Generate time series data for archetypes
 def generate_time_series_data():
@@ -107,9 +123,32 @@ def calculate_rarity_score(archetype):
     
     return score
 
+# Middleware for tracking request metrics
+@app.before_request
+def before_request():
+    request.start_time = time.time()
+    ACTIVE_USERS.inc()
+
+@app.after_request
+def after_request(response):
+    request_latency = time.time() - request.start_time
+    ENDPOINT_REQUESTS.labels(
+        endpoint=request.path, 
+        method=request.method,
+        status_code=response.status_code
+    ).inc()
+    REQUEST_LATENCY.labels(endpoint=request.path).observe(request_latency)
+    ACTIVE_USERS.dec()
+    return response
+
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html")
+
+# Prometheus metrics endpoint on the same server
+@app.route('/metrics')
+def metrics():
+    return Response(generate_latest(REGISTRY), mimetype='text/plain')
 
 # Process dream text and return interpretation
 @app.route("/llm", methods=["POST"])
@@ -120,26 +159,26 @@ def llm_():
     if request.method == "POST":
         dream_text = request.form["dream"]
 
-    data = the_big_dipper.main(dream_text=dream_text)
-    # data = {
-    #     "archetype": "everyman",
-    #     "descriptive_content": {
-    #         "title": "nope",
-    #         "content": "please kys"
-    #     }
-    # }
-    selected_archetype = data['archetype']
-    # Store the dream and archetype for history
-    # if "archetype" in data:
-    #     dream_history.append({
-    #         "dream": dream_text,
-    #         "archetype": data["archetype"],
-    #         "timestamp": datetime.now().isoformat()
-    #     })
-    
-    response = Response(json_listify(data), mimetype="application/json")
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    # Track dream processing time
+    with DREAM_PROCESSING_TIME.time():
+        try:
+            data = the_big_dipper.main(dream_text=dream_text)
+            selected_archetype = data['archetype']
+            
+            # Update archetype distribution
+            ARCHETYPE_DISTRIBUTION.labels(selected_archetype).inc()
+            
+            # Record successful submission
+            DREAM_SUBMISSIONS.labels(status='success').inc()
+            
+            response = Response(json_listify(data), mimetype="application/json")
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
+        except Exception as e:
+            # Record failed submission
+            DREAM_SUBMISSIONS.labels(status='error').inc()
+            print(f"Error processing dream: {e}")
+            return jsonify({"error": "Failed to process dream"}), 500
 
 # Visualization API endpoints
 @app.route('/get_bar_data')
@@ -238,6 +277,6 @@ def get_resources(archetype):
         ]
         return jsonify(default_resources)
 
-
 if __name__ == "__main__":
+    print("Flask server started on port 8000 (includes Prometheus metrics at /metrics)")
     app.run(port=8000, debug=True)
