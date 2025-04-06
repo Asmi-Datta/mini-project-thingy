@@ -50,7 +50,7 @@ This should return `Python 3.11.11`, and `12.4` respectively.
 
 Finally, install the rest of the dependencies
 ```sh
-pip install accelerate beautifulsoup4 huggingface_hub langchain langchain-community langchain-huggingface langchain-ollama ollama python-dotenv requests sentence_transformers ipykernel iprogress flask pypdf flask-cors
+pip install -r requirements.txt
 ```
 <hr>
 
